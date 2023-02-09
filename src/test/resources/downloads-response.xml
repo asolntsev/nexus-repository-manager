@@ -1,0 +1,17 @@
+<statsTimelineResp>
+  <data>
+    <projectId>186c4c63cde8c</projectId>
+    <groupId>com.codeborne</groupId>
+    <artifactId>selenide</artifactId>
+    <type>RAW</type>
+    <total>2181893</total>
+    <timeline>
+      <int>361952</int>
+      <int>426627</int>
+      <int>449754</int>
+      <int>474009</int>
+      <int>469551</int>
+      <int>0</int>
+    </timeline>
+  </data>
+</statsTimelineResp>

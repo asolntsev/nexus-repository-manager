@@ -1,0 +1,23 @@
+<statsTimelineResp>
+  <data>
+    <projectId>186c4c63cde8c</projectId>
+    <groupId>com.codeborne</groupId>
+    <artifactId>selenide</artifactId>
+    <type>IP</type>
+    <total>641072</total>
+    <timeline>
+      <int>46524</int>
+      <int>48413</int>
+      <int>59355</int>
+      <int>50908</int>
+      <int>51657</int>
+      <int>61777</int>
+      <int>53448</int>
+      <int>64434</int>
+      <int>66099</int>
+      <int>67543</int>
+      <int>70914</int>
+      <int>0</int>
+    </timeline>
+  </data>
+</statsTimelineResp>

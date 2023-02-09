@@ -1,13 +1,14 @@
 package org.nexus;
 
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.core5.http.Header;
 import org.apache.hc.core5.http.HttpResponse;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Base64;
@@ -17,11 +18,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.format.DateTimeFormatter.ofPattern;
 import static org.apache.hc.core5.http.HttpStatus.SC_NO_CONTENT;
 import static org.apache.hc.core5.http.HttpStatus.SC_OK;
+import static org.apache.hc.core5.http.HttpStatus.SC_UNAUTHORIZED;
 
 public class NexusClient {
   private static final Pattern REGEX_SESSION_COOKIE = Pattern.compile("NXSESSIONID=(.+?);.*");
   private final HttpClient client = HttpClientBuilder.create().build();
-  private final XmlMapper objectMapper = new XmlMapper();
+  private final TimelineParser parser = new TimelineParser();
+  
   private final String username;
   private final String password;
   private final String host = "https://oss.sonatype.org";
@@ -32,12 +35,19 @@ public class NexusClient {
     this.password = password;
   }
 
-  private String login() throws IOException {
+  /**
+   * Not needed to call directly. 
+   * May be useful for checking if username+password is correct.
+   */
+  public String login() throws IOException {
     String url = host + "/service/local/authentication/login?_dc=" + System.currentTimeMillis();
     HttpGet get = new HttpGet(url);
     get.addHeader("Authorization", authorizationHeader());
     HttpResponse response = client.execute(get);
     int statusCode = response.getCode();
+    if (statusCode == SC_UNAUTHORIZED) {
+      throw new InvalidCredentials("Login failed (status code: " + statusCode + ")");
+    }
     if (statusCode != SC_OK && statusCode != SC_NO_CONTENT) {
       throw new RuntimeException("Error login response: " + statusCode);
     }
@@ -79,7 +89,12 @@ public class NexusClient {
     get.addHeader("Set-Cookie", "NXSESSIONID=" + getSessionId());
 
     String xml = client.execute(get, new BasicHttpClientResponseHandler());
-    return objectMapper.readValue(xml, Timeline.class);
+    try {
+      return parser.parseTimelineXml(xml);
+    }
+    catch (ParserConfigurationException | SAXException invalidXml) {
+      throw new IllegalArgumentException("Failed to parse XML response for " + url, invalidXml);
+    }
   }
 
   private String type(StatisticsType statisticsType) {

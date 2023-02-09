@@ -5,13 +5,12 @@ plugins {
 
 group = 'com.codeborne'
 archivesBaseName = 'nexus-repository-manager'
-version = '1.0.1-SNAPSHOT'
+version = '1.0.1'
 
 defaultTasks 'check', 'publishToMavenLocal'
 
 dependencies {
   implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
-  implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.14.1'
   implementation 'org.slf4j:slf4j-api:2.0.6'
   implementation 'commons-io:commons-io:2.11.0'
   testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
